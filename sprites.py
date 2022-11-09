@@ -1,3 +1,4 @@
+import itertools
 import math
 import random
 
@@ -104,7 +105,7 @@ class Agent(BaseSprite):
     def get_agent_path(self, coin_distance):
         pass
 
-
+"""
 class ExampleAgent(Agent):
     def __init__(self, x, y, file_name):
         super().__init__(x, y, file_name)
@@ -112,6 +113,61 @@ class ExampleAgent(Agent):
     def get_agent_path(self, coin_distance):
         path = [i for i in range(1, len(coin_distance))]
         print(coin_distance)
-        random.shuffle(path)
         print(path)
+        random.shuffle(path)
+        print([0] + path + [0])
         return [0] + path + [0]
+"""
+
+class AkiAgent(Agent):
+    def __init__(self, x, y, file_name):
+        super().__init__(x, y, file_name)
+
+    def get_agent_path(self, coin_distance):
+        coins = [i for i in range(1, len(coin_distance))]
+        path = []
+        nextCoin = 0
+        path.append(nextCoin)
+
+        while len(coins):
+            availCoins = {}
+            rowCoinsCost = coin_distance[nextCoin]
+            print(coins)
+            #Pravimo dictionary {idCoin: costToCoin)
+            for i in coins:
+                availCoins[i] = rowCoinsCost[i]
+            nextCoin = min(availCoins, key=availCoins.get)
+            path.append(nextCoin)
+            coins.remove(nextCoin)
+        path.append(0)
+        print(path)
+        return path
+
+
+class ExampleAgent(Agent):
+    def __init__(self, x, y, file_name):
+        super().__init__(x, y, file_name)
+
+    def get_agent_path(self, coin_distance):
+        path = [i for i in range(1, len(coin_distance))]
+        allPaths = permutations(path)
+        costs = calculateCost(allPaths, coin_distance)
+        minimumCost = min(costs)
+        minimumCostIndex = costs.index(minimumCost)
+        print(list(allPaths[minimumCostIndex]))
+        return [0] + list(allPaths[minimumCostIndex]) + [0]
+
+def permutations(list_perm):
+    return list(itertools.permutations(list_perm))
+
+def calculateCost(allPaths, coin_distance):
+    costs = []
+    for path in allPaths:
+        path = list(path)
+        path.insert(0, 0)
+        sum = 0
+        for i in range(0, (len(path) - 1)):
+            sum += coin_distance[path[i]][path[i+1]]
+        sum += coin_distance[path[len(path) - 1]][0]
+        costs.append(sum)
+    return costs
