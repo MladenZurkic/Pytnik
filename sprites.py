@@ -5,7 +5,7 @@ import random
 import pygame
 import os
 import config
-
+from util import Node
 
 class BaseSprite(pygame.sprite.Sprite):
     images = dict()
@@ -119,7 +119,7 @@ class ExampleAgent(Agent):
         return [0] + path + [0]
 """
 
-class AkiAgent(Agent):
+class Aki(Agent):
     def __init__(self, x, y, file_name):
         super().__init__(x, y, file_name)
 
@@ -144,7 +144,7 @@ class AkiAgent(Agent):
         return path
 
 
-class ExampleAgent(Agent):
+class Jocke(Agent):
     def __init__(self, x, y, file_name):
         super().__init__(x, y, file_name)
 
@@ -171,3 +171,23 @@ def calculateCost(allPaths, coin_distance):
         sum += coin_distance[path[len(path) - 1]][0]
         costs.append(sum)
     return costs
+
+class ExampleAgent(Agent):
+    def __init__(self, x, y, file_name):
+        super().__init__(x, y, file_name)
+
+    def get_agent_path(self, coin_distance):
+        path = [i for i in range(1, len(coin_distance))]
+        n = len(coin_distance) #8
+        print(n)
+        firstNode = Node([0],0,0)
+        listOfNodes = [firstNode]
+        while(len(listOfNodes) != 0):
+            curr = listOfNodes.pop(0)
+            remaining = [i for i in range(1, n) if i not in curr.path]
+            print(remaining)
+            
+
+
+
+        return [0] + path + [0]
