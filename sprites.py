@@ -152,6 +152,7 @@ class Jocke(Agent):
         path = [i for i in range(1, len(coin_distance))]
         allPaths = permutations(path)
         costs = calculateCost(allPaths, coin_distance)
+        print(costs)
         minimumCost = min(costs)
         minimumCostIndex = costs.index(minimumCost)
         print(list(allPaths[minimumCostIndex]))
@@ -184,10 +185,28 @@ class ExampleAgent(Agent):
         listOfNodes = [firstNode]
         while(len(listOfNodes) != 0):
             curr = listOfNodes.pop(0)
-            remaining = [i for i in range(1, n) if i not in curr.path]
-            print(remaining)
-            
+            if (len(curr.path) == (n + 1)):  #Nasli smo putanju sa ciljnim cvorom
+                print(curr.cost)
+                return curr.path
+            if(len(curr.path) == n): # Ako je putanja obisla sve sem krajnjeg, treba da se vrati
+                remaining = [0]
+            else:
+                remaining = [i for i in range(1, n) if i not in curr.path]
+
+            newPaths = expandNode(curr, remaining, coin_distance)
+            addNewPathsAndSort(listOfNodes, newPaths, n)
+        return []
 
 
+def expandNode(curr, remaining, coin_distance):
+    newNodesList = []
+    for i in remaining:
+        newNodesList.append(Node(curr.path + [i], curr.cost + coin_distance[curr.path[-1]][i], curr.level + 1))
+    return newNodesList
 
-        return [0] + path + [0]
+
+def addNewPathsAndSort(listOfNodes, newPaths, n):
+    listOfNodes.extend(newPaths)
+    key = lambda x: (x.cost, n-len(x.path), x.path[-1])
+    listOfNodes.sort(key=key)
+    return

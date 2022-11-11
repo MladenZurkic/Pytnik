@@ -45,7 +45,7 @@ class TimedFunction(Thread):
             timer.cancel()
 
 class Node():
-    def __init__(self, path, cost, level):
+    def __init__(self, path = 0, cost = 0, level = 0):
         self.path = path
         self.cost = cost
         self.level = level
