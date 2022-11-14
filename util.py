@@ -49,3 +49,6 @@ class Node():
         self.path = path
         self.cost = cost
         self.level = level
+
+    def __eq__(self, obj):
+        return self.cost == obj.cost

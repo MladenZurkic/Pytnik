@@ -1,6 +1,9 @@
+import heapq
 import itertools
 import math
+import queue
 import random
+import numpy
 
 import pygame
 import os
@@ -173,7 +176,62 @@ def calculateCost(allPaths, coin_distance):
         costs.append(sum)
     return costs
 
-class ExampleAgent(Agent):
+
+#UKI AGENT - Branch and bound - implementacija heapq - 0.022s
+class Uki(Agent):
+    def __init__(self, x, y, file_name):
+        super().__init__(x, y, file_name)
+
+    def get_agent_path(self, coin_distance):
+        path = [i for i in range(1, len(coin_distance))]
+        n = len(coin_distance) #8
+        firstNode = Node([0],0,0)
+        listOfNodes = [(firstNode.cost, n-len(firstNode.path), firstNode.path[-1], firstNode)]
+        heapq.heapify(listOfNodes)
+        while(len(listOfNodes) != 0):
+            curr = heapq.heappop(listOfNodes)[3]
+            if (len(curr.path) == (n + 1)):  #Nasli smo putanju sa ciljnim cvorom
+                return curr.path
+            if(len(curr.path) == n): # Ako je putanja obisla sve sem krajnjeg, treba da se vrati
+                remaining = [0]
+            else:
+                remaining = [i for i in range(1, n) if i not in curr.path]
+            for i in remaining:
+                heapq.heappush(listOfNodes, (curr.cost + coin_distance[curr.path[-1]][i], n - (curr.level + 1), i,
+                                             Node(curr.path + [i], curr.cost + coin_distance[curr.path[-1]][i],
+                                                  curr.level + 1)))
+        return []
+
+
+
+#UKI AGENT - Branch and bound - implementacija pq - 0.3s
+class UkiAgentPQ(Agent):
+    def __init__(self, x, y, file_name):
+        super().__init__(x, y, file_name)
+
+    def get_agent_path(self, coin_distance):
+        path = [i for i in range(1, len(coin_distance))]
+        n = len(coin_distance) #8
+        firstNode = Node([0],0,0)
+        queueOfNodes = queue.PriorityQueue()
+        queueOfNodes.put((firstNode.cost, n-len(firstNode.path), firstNode.path[-1], firstNode))
+        while not queueOfNodes.empty():
+            curr = queueOfNodes.get()[3]
+            if (len(curr.path) == (n + 1)):  #Nasli smo putanju sa ciljnim cvorom
+                return curr.path
+            if(len(curr.path) == n): # Ako je putanja obisla sve sem krajnjeg, treba da se vrati
+                remaining = [0]
+            else:
+                remaining = [i for i in range(1, n) if i not in curr.path]
+            for i in remaining:
+                queueOfNodes.put((curr.cost + coin_distance[curr.path[-1]][i], n - (curr.level + 1), i,
+                                  Node(curr.path + [i], curr.cost + coin_distance[curr.path[-1]][i], curr.level + 1)))
+        return []
+
+
+
+#UKI AGENT - Branch and bound - implementacija lista listi - 2.4s
+class UkiAgentListaListi(Agent):
     def __init__(self, x, y, file_name):
         super().__init__(x, y, file_name)
 
