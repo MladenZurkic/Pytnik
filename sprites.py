@@ -133,7 +133,6 @@ class Aki(Agent):
         while len(coins):
             availCoins = {}
             rowCoinsCost = coin_distance[nextCoin]
-            print(coins)
             #Pravimo dictionary {idCoin: costToCoin)
             for i in coins:
                 availCoins[i] = rowCoinsCost[i]
